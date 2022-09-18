@@ -1,17 +1,22 @@
 const express = require('express')
+const random = require('random')
 const app = express()
+const Contenedor = require('./contenedor')
 
-app.get('/', (req,res) => {
-    res.send('<h1 style="color:blue;">Bienvenidos al servidor express</h1>')
+app.get('/productos', (req,res) => {
+    let productosClase = new Contenedor('productos.txt')
+    let respuesta = productosClase.getAll()
+    respuesta.then( val => res.send(val))
 })
 
-let visitas = 0
-app.get('/visitas', (req,res) => {
-    res.send(`La cantidad de visitas es ${++visitas}`)
-})
-
-app.get('/fyh', (req,res) => {
-    res.send({fyh: new Date().toLocaleString()})
+app.get('/productoRandom', (req,res) => {
+    let productosClase = new Contenedor('productos.txt')
+    let randomNum = -1
+    productosClase.quantityProduct().then( val => {
+        randomNum = random.int(1, val)
+        let respuesta = productosClase.getById(randomNum)
+        respuesta.then( val => res.send(val))
+    })
 })
 
 const PORT = process.env.PORT || 8080
